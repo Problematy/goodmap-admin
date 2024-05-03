@@ -1,11 +1,20 @@
 $(document).ready(function () {
     $('.select2').select2({placeholder: "Select an option"});
 
-    // Получаем ID локации и типа места
+    // Функция для скрытия или показа элементов управления в зависимости от состояния чекбокса
+    function toggleRelatedField(checkbox, relatedContainer) {
+        if (checkbox.is(':checked')) {
+            relatedContainer.show();
+            relatedContainer.next('br').show();
+        } else {
+            relatedContainer.hide();
+            relatedContainer.next('br').hide();
+        }
+    }
+
     const locationId = $('#location_id').val() || window.location.pathname.match(/\/locations\/(\d+)\/edit/)[1];
     const attributesContainer = $('#attributes-container');
 
-    // Функция для загрузки атрибутов выбранного типа места
     function loadTypeOfPlaceAttributes(typeOfPlaceId) {
         $.ajax({
             url: `/type_of_place/${typeOfPlaceId}/attributes/`,
@@ -14,40 +23,41 @@ $(document).ready(function () {
                 attributesContainer.empty();
                 data.forEach(function (attr) {
                     var attributeId = `attribute-${attr.attribute_id}`;
-                    var checkbox = $(`<input>`, {
+                    var checkboxDiv = $('<div>', {class: 'form-check'}).appendTo(attributesContainer);
+                    var checkbox = $('<input>', {
                         type: 'checkbox',
                         class: 'form-check-input attribute-checkbox',
                         id: attributeId,
                         name: `attribute_values_${attr.attribute_name}`,
-                        value: attr.attribute_id,
-                        change: function () {
-                            var valuesContainer = $(`#values-${attr.attribute_id}`);
-                            if ($(this).is(':checked')) {
-                                loadAttributeValues(attr.attribute_id, valuesContainer, []);
-                            } else {
-                                valuesContainer.empty();
-                            }
-                        }
-                    });
-                    var label = $(`<label>`, {
+                        value: attr.attribute_id
+                    }).appendTo(checkboxDiv);
+
+                    $('<label>', {
                         class: 'form-check-label',
                         for: attributeId,
                         text: attr.attribute_name
-                    });
-                    var div = $(`<div>`, {class: 'form-check'}).append(checkbox).append(label);
-                    var valuesContainer = $(`<div>`, {
+                    }).appendTo(checkboxDiv);
+
+                    $('<br>').appendTo(attributesContainer)
+
+                    var valuesContainer = $('<div>', {
                         id: `values-${attr.attribute_id}`,
                         class: 'attribute-values-container'
+                    }).appendTo(attributesContainer);
+
+                    $('<br>').appendTo(attributesContainer).hide();
+
+                    checkbox.change(function () {
+                        toggleRelatedField($(this), valuesContainer);
                     });
 
-                    attributesContainer.append(div).append(`<br>`).append(valuesContainer).append(`<br>`);
-                    // Проверка, выбран ли атрибут
                     if (existingAttributes && existingAttributes[attr.attribute_id]) {
                         checkbox.prop('checked', true);
                         loadAttributeValues(attr.attribute_id, valuesContainer, existingAttributes[attr.attribute_id]);
                     } else {
                         loadAttributeValues(attr.attribute_id, valuesContainer, []);
                     }
+                    toggleRelatedField(checkbox, valuesContainer);
                 });
             },
             error: function () {
@@ -65,15 +75,19 @@ $(document).ready(function () {
                     class: 'form-control select2',
                     name: `selected_values_${attributeId}[]`,
                     multiple: 'multiple'
-                });
+                }).appendTo(container);
 
                 values.forEach(function (value) {
                     var isSelected = Array.isArray(selectedValues) && selectedValues.includes(value.id);
-                    select.append(new Option(value.content, value.id, isSelected, isSelected));
+                    $('<option>', {
+                        value: value.id,
+                        text: value.content,
+                        selected: isSelected
+                    }).appendTo(select);
                 });
 
-                container.html(select);
-                select.select2(); // Re-initialize select2 for dynamic content
+                select.select2();
+                select.next('.select2-container').css('width', '100%');
             },
             error: function () {
                 console.error(`Error loading values for attribute ${attributeId}.`);
@@ -81,8 +95,6 @@ $(document).ready(function () {
         });
     }
 
-
-    // Загрузка существующих атрибутов и их значений для локации
     function loadExistingAttributes() {
         $.ajax({
             url: `/locations/${locationId}/selected_attributes/`,

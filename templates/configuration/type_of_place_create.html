@@ -20,12 +20,14 @@
                     <h4 class="card-title text-center">Create Type of Place</h4>
                 </div>
                 <div class="card-body">
-                    {% if form.errors %}
+                    {% if form.non_field_errors %}
                         <div class="alert alert-danger" role="alert">
-                            Please correct the errors below.
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
                         </div>
                     {% endif %}
-                    <form method="post" id="typeOfPlaceForm">
+                    <form method="post" id="typeOfPlaceForm" novalidate>
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="typeName" class="form-label">Type of Place Name</label>
@@ -42,6 +44,9 @@
                             <label for="enable_website" class="form-check-label">Add a website</label>
                             <input type="url" name="website" id="website" class="form-control"
                                    value="{{ form.website.value|default_if_none:'' }}" disabled>
+                            {% for error in form.website.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
                         </div>
                         <br>
                         <div class="form-check">
@@ -50,6 +55,9 @@
                             <label for="enable_comments" class="form-check-label">Add a comments</label>
                             <textarea name="comments" id="comments" class="form-control"
                                       disabled>{{ form.comments.value|default_if_none:'' }}</textarea>
+                            {% for error in form.comments.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
                         </div>
                         <br>
                         <div id="dynamic-attributes-container" class="mb-3"></div>

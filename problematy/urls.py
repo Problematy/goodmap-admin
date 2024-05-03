@@ -22,7 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("authorization.urls")),
     path("", include("configuration.urls")),
-    path("", include("locations.urls")),
 
     path("", DashboardView.as_view(), name="index"),
 ]

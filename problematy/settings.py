@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['admin.problematy.space', 'problematy.space']
 if DEBUG:
     ALLOWED_HOSTS.append('*')
 
@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'authorization.apps.AuthorizationConfig',
     'configuration.apps.ConfigurationConfig',
-    'locations.apps.LocationsConfig',
 ]
 
 MIDDLEWARE = [

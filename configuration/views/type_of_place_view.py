@@ -6,7 +6,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from configuration.models import TypeOfPlace, Attribute, TypeOfPlaceAttribute, Value
 from configuration.forms import TypeOfPlaceCreateForm, TypeOfPlaceEditForm
 from problematy.utils import get_user_permissions, PermissionMixin
@@ -159,3 +159,18 @@ def get_attributes_for_type_of_place(request, type_of_place_id):
     attributes = Attribute.objects.filter(typeofplaceattribute__type_of_place_id=type_of_place_id).distinct()
     data = [{'id': attr.id, 'name': attr.name} for attr in attributes]
     return JsonResponse(data, safe=False)
+
+
+class TypeOfPlaceAttributesView(PermissionMixin, LoginRequiredMixin, DetailView):
+    model = TypeOfPlace
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        attributes_with_values = self.object.get_attributes_with_values()
+        return JsonResponse(attributes_with_values, safe=False)
+
+
+def get_attribute_values(request, attribute_id):
+    values = Value.objects.filter(attribute_id=attribute_id).values_list('id', 'content')
+    result = [{'id': v[0], 'text': v[1]} for v in values]
+    return JsonResponse(result, safe=False)

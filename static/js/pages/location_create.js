@@ -1,9 +1,4 @@
 $(document).ready(function () {
-    $('.select2').select2({
-        placeholder: "Select an option",
-        allowClear: true
-    });
-
     $('#id_type_of_place').change(function () {
         var typeOfPlaceId = $(this).val();
         var attributesContainer = $('#attributes-container');
@@ -14,7 +9,7 @@ $(document).ready(function () {
                 url: `/type_of_place/${typeOfPlaceId}/attributes/`,
                 method: 'GET',
                 success: function (data) {
-                            console.log(data)
+                    console.log(data)
 
                     data.forEach(function (attr) {
                         var attributeId = `attribute-${attr.attribute_id}`;
@@ -27,20 +22,20 @@ $(document).ready(function () {
                         attributesContainer.append(checkboxHtml);
 
                         $(`#${attributeId}`).change(function () {
-                            var valuesContainer = $(`#values-${attr.attribute_id}`);
-                            console.log(attr)
+                            const valuesContainer = $(`#values-${attr.attribute_id}`);
                             if ($(this).is(':checked')) {
                                 $.ajax({
                                     url: `/attributes/values_for_place/${typeOfPlaceId}/${attr.attribute_id}/`,
                                     method: 'GET',
                                     success: function (values) {
-                                        var selectHtml = `<br><select class="form-control select2 attribute-value-selector" name="selected_values_${attr.attribute_id}[]" multiple>`;
-                                        values.forEach(function(value) {
-                                            selectHtml += `<option value="${value.id}">${value.content}</option>`;
+                                        let selectHtml = '<br><select class="form-control select2 attribute-value-selector" name="selected_values_' + attr.attribute_id + '[]" multiple>';
+                                        values.forEach(function (value) {
+                                            selectHtml += '<option value="' + value.id + '">' + value.content + '</option>';
                                         });
-                                        selectHtml += `</select>`;
+                                        selectHtml += '</select>';
                                         valuesContainer.html(selectHtml);
-                                        valuesContainer.find('.select2').select2({ placeholder: "Select values" });
+                                        valuesContainer.find('.select2').select2({placeholder: "Select values"});
+                                        valuesContainer.find('.select2-container').css('width', '100%'); // Установка ширины после инициализации Select2
                                     },
                                     error: function () {
                                         console.error('Error loading attribute values');

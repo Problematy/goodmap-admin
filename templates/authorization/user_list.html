@@ -33,14 +33,12 @@
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th>Created</th>
-                                <th>Last Login</th>
-                                {% if request.user.is_superuser %}
-                                    <th>
-                                        <div class="d-flex align-items-center justify-content-center gap-2">
-                                            Actions
-                                        </div>
-                                    </th>
-                                {% endif %}
+                                <th class="text-nowrap">Last Login</th>
+                                <th>
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        Actions
+                                    </div>
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
@@ -66,9 +64,11 @@
                                                 </div>
                                             </td>
                                         {% else %}
-                                            <div class="d-flex align-items-center justify-content-center gap-2">
-                                                <td>Restricted</td>
-                                            </div>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                                    Restricted
+                                                </div>
+                                            </td>
                                         {% endif %}
                                     {% else %}
                                         {% if can_manage_users %}
