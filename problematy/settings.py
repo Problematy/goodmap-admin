@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'authorization.apps.AuthorizationConfig',
     'configuration.apps.ConfigurationConfig',
+    'locations.apps.LocationsConfig',
 ]
 
 MIDDLEWARE = [

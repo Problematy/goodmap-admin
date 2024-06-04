@@ -44,6 +44,17 @@
                             </div>
                         </div>
 
+                        <div class="form-check">
+                            <input type="checkbox" id="visible_in_categories" name="visible_in_categories"
+                                   class="form-check-input" {% if form.visible_in_categories.value %}checked{% endif %}>
+                            <label for="visible_in_categories" class="form-label">Visible in "Categories"</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="visible_in_visible_data" name="visible_in_visible_data"
+                                   class="form-check-input" {% if form.visible_in_visible_data.value %}checked{% endif %}>
+                            <label for="visible_in_visible_data" class="form-label">Visible in "Visible Data"</label>
+                        </div>
+
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="values" class="form-label">Values</label>

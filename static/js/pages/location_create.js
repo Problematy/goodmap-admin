@@ -9,7 +9,38 @@ $(document).ready(function () {
                 url: `/type_of_place/${typeOfPlaceId}/attributes/`,
                 method: 'GET',
                 success: function (data) {
-                    console.log(data)
+                    var enable_website = false;
+                    var enable_comments = false;
+
+                    // Проходим по массиву и извлекаем значения enable_website и enable_comments
+                    data = data.filter(item => {
+                        if (item.hasOwnProperty('enable_website')) {
+                            enable_website = item.enable_website;
+                            return false;
+                        }
+                        if (item.hasOwnProperty('enable_comments')) {
+                            enable_comments = item.enable_comments;
+                            return false;
+                        }
+                        return true;
+                    });
+
+                    if (enable_website) {
+                        var websiteHtml = `<div class="form-group mb-3">
+                            <label for="website" class="form-label">Website</label>
+                            <input type="url" class="form-control" id="website" name="website" placeholder="Enter website URL">
+                        </div>`;
+                        attributesContainer.append(websiteHtml);
+                    }
+
+                    if (enable_comments) {
+                        var commentsHtml = `<div class="form-group mb-3">
+                            <label for="comments" class="form-label">Comments</label>
+                            <input type="text" class="form-control" id="comments" name="comments" placeholder="Enter comments">
+                        </div>`;
+                        attributesContainer.append(commentsHtml);
+                    }
+
 
                     data.forEach(function (attr) {
                         var attributeId = `attribute-${attr.attribute_id}`;
@@ -59,7 +90,7 @@ $(document).ready(function () {
     let bounds = L.latLngBounds(southWest, northEast);
 
     let map = L.map('map', {
-        center: [51.505, -0.09],
+        center: [52.232, 21.01],
         zoom: 13,
         minZoom: 2,
         maxBounds: bounds,
@@ -87,8 +118,8 @@ $(document).ready(function () {
         updateMarker(coord.lat, coord.lng);
     });
 
-    let initialLat = $('input[name="latitude"]').val() ? parseFloat($('input[name="latitude"]').val()) : 51.505;
-    let initialLng = $('input[name="longitude"]').val() ? parseFloat($('input[name="longitude"]').val()) : -0.09;
+    let initialLat = $('input[name="latitude"]').val() ? parseFloat($('input[name="latitude"]').val()) : 52.232;
+    let initialLng = $('input[name="longitude"]').val() ? parseFloat($('input[name="longitude"]').val()) : 21.01;
     updateMarker(initialLat, initialLng);
     map.panTo(new L.LatLng(initialLat, initialLng));
 });

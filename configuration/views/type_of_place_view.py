@@ -9,6 +9,7 @@ from django.utils.safestring import mark_safe
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from configuration.models import TypeOfPlace, Attribute, TypeOfPlaceAttribute, Value
 from configuration.forms import TypeOfPlaceCreateForm, TypeOfPlaceEditForm
+from locations.models import Location
 from problematy.utils import get_user_permissions, PermissionMixin
 
 
@@ -62,13 +63,6 @@ class TypeOfPlaceCreateView(PermissionMixin, LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-
-        # Обработка флажков и дополнительных полей
-        self.object.enable_website = form.cleaned_data.get('enable_website', False)
-        self.object.website = form.cleaned_data['website'] if self.object.enable_website else ''
-
-        self.object.enable_comments = form.cleaned_data.get('enable_comments', False)
-        self.object.comments = form.cleaned_data['comments'] if self.object.enable_comments else ''
 
         self.object.save()
 
@@ -167,6 +161,9 @@ class TypeOfPlaceAttributesView(PermissionMixin, LoginRequiredMixin, DetailView)
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         attributes_with_values = self.object.get_attributes_with_values()
+        attributes_with_values.append({'enable_website': self.object.enable_website})
+        attributes_with_values.append({'enable_comments': self.object.enable_comments})
+        print(attributes_with_values)
         return JsonResponse(attributes_with_values, safe=False)
 
 
