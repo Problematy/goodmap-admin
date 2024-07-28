@@ -1,0 +1,26 @@
+runtime: python312
+
+entrypoint: gunicorn --bind :$PORT problematy.wsgi:application
+
+env_variables:
+    APPENGINE_URL: your_app_uri
+    SECRET_KEY:  your_secret_key
+    DB_NAME: your_db_name
+    DB_USER: your_db_user
+    DB_PASSWORD: your_db_password
+    DB_HOST: your_db_host
+    DB_PORT: your_db_port
+    LOCATIONS_BLOB_FILEPATH: your_json_filepath
+    APPLICATION_BUCKET_NAME: your_bucket_name
+
+handlers:
+# This configures Google App Engine to serve the files in the app's static
+# directory.
+- url: /static
+  static_dir: static/
+
+# This handler routes all requests not caught above to your main app. It is
+# required when static routes are defined, but can be omitted (along with
+# the entire handlers section) when there are no static files defined.
+- url: /.*
+  script: auto
